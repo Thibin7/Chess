@@ -1,7 +1,4 @@
 # Makefile Generique
-install:
-	mkdir -p Obj
-	mkdir -p bin
 
 CC = g++
 EXEC = Chess
@@ -28,5 +25,8 @@ $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 
 clean:
 	@rm -rf ./Obj/*.o
-	@rm -rf ./Src/*.o
 	@rm -rf ./bin/*
+
+install:
+	@mkdir -p Obj
+	@mkdir -p bin

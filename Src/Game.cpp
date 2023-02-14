@@ -36,14 +36,17 @@ void Game::start()
     w_myBoard->displayCurrentState();
   }
 
-  delete w_myBoard;
+  if (w_myBoard != nullptr)
+  {
+    delete w_myBoard;
+  }
 }
 
 // Manage the user input
 ts_move Game::_manageUserInput()
 {
     std::string w_userInput = "";
-    ts_move w_askedMove = {{-1,-1}, {-1,-1}};
+    ts_move w_askedMove = Constants::C_EOF_MOVE;
 
     std::cout << "Enter movement : ";
     std::cin >> w_userInput;
