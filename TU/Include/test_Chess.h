@@ -11,6 +11,8 @@ class ChessTest : public CppUnit::TestFixture
     CPPUNIT_TEST_SUITE(ChessTest);
     CPPUNIT_TEST(test_knight);
     CPPUNIT_TEST(test_bishop);
+    CPPUNIT_TEST(test_rook);
+    CPPUNIT_TEST(test_king);
     CPPUNIT_TEST_SUITE_END();
 
   public:
@@ -21,6 +23,8 @@ class ChessTest : public CppUnit::TestFixture
 
     void test_knight();
     void test_bishop();
+    void test_rook();
+    void test_king();
 
   private:
     Board * mp_board {nullptr};

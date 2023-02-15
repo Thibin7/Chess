@@ -12,6 +12,7 @@ class Board
 {
   public:
     Board();
+    Board(std::string & ai_filePath);
     ~Board();
 
     void displayCurrentState();
@@ -21,10 +22,19 @@ class Board
 
     Piece * isPieceOnSquare(ts_position ai_position);
 
+    bool loadGameFile(std::string& ai_filePath);
+
 
   private:
     std::vector<Piece *> m_currentState;
     ColorEnum m_playerColor {E_WHITE};
+
+    bool _parseFileSave(std::string & ai_readSave);
+    bool _setPlayerColorFromFile(std::string & ai_playerColor);
+    bool _setPieceFromFile(std::string & ai_pieceType, std::string & ai_pieceColor, std::string & ai_piecePosition);
+    PieceEnum _intepretePieceType(std::string & ai_pieceType);
+    ColorEnum _intepretePieceColor(std::string & ai_pieceColor);
+    ts_position _intepretePiecePosition(std::string & ai_piecePosition);
 
 
     void _swapPlayerColor();

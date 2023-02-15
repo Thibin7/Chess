@@ -29,7 +29,8 @@ enum PieceEnum
 enum ColorEnum
 {
   E_WHITE,
-  E_BLACK
+  E_BLACK,
+  E_UNKNOWN_COLOR
 };
 
 bool operator==(const ts_position&, const ts_position&);

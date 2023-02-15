@@ -52,7 +52,7 @@ bool Rook::isMovementValid(ts_position ai_askedPosition)
 
 
   // If a piece is on the path
-  if( !mp_mainBoard->isPieceOnThePath(m_position, ai_askedPosition) )
+  if( mp_mainBoard->isPieceOnThePath(m_position, ai_askedPosition) )
   {
     return false;
   }
