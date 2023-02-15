@@ -14,7 +14,8 @@ Game::~Game()
 // Main method that run the game
 void Game::start()
 {
-  Board * w_myBoard = new Board();
+  std::string w_fileToLoad = "./Saves/test_save.txt";
+  Board * w_myBoard = new Board(w_fileToLoad);
   w_myBoard->displayCurrentState();
 
 

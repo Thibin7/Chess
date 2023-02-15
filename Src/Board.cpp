@@ -3,6 +3,7 @@
 #include "../Include/Piece.h"
 
 #include <iostream>
+#include <fstream>
 
 #include "../Include/Rook.h"
 #include "../Include/Knight.h"
@@ -56,6 +57,11 @@ Board::Board()
   }
 }
 
+// Construtor to load game save
+Board::Board(std::string & ai_filePath)
+{
+  loadGameFile(ai_filePath);
+}
 
 // Destructor
 Board::~Board()
@@ -187,6 +193,180 @@ Piece * Board::isPieceOnSquare(ts_position ai_position)
 
   return nullptr;
 }
+
+// Load a file game save
+// Return true if the file has been correctly loaded
+bool Board::loadGameFile(std::string& ai_filePath)
+{
+  if (ai_filePath.empty())
+  {
+    std::cout << "[WARNING] File path is empty : file not loaded !" << std::endl;
+    return false;
+  }
+
+  // Create file stream
+  std::ifstream w_loadedFile;
+  w_loadedFile.open(ai_filePath);
+
+  // If an error occured while openning file
+  if ( !w_loadedFile.is_open() )
+  {
+    std::cout << "[WARNING] Cannot open file : file not loaded !" << std::endl;
+    return false;
+  }
+  else
+  {
+    // Reading first line of file
+    std::string w_readSave;
+    std::getline(w_loadedFile, w_readSave);
+
+    _parseFileSave(w_readSave);
+  }
+
+  return true;
+}
+
+// Parse what we read from the save file
+bool Board::_parseFileSave(std::string & ai_readSave)
+{
+  if ( ai_readSave.empty() )
+  {
+    std::cout << "[WARNING] Nothing to read in save file : file not loaded !" << std::endl;
+    return false;
+  }
+  // Getting the player color turn
+  std::string w_playerTurn = ai_readSave.substr(0,1);
+  if ( !_setPlayerColorFromFile(w_playerTurn) )
+  {
+    return false;
+  }
+
+
+  std::string w_pieceType;
+  std::string w_pieceColor;
+  std::string w_piecePosition;
+
+
+  int w_readFileLen = ai_readSave.length();
+  int w_count = 1;
+
+  // Reading information piece by piece
+  while ( w_count < w_readFileLen )
+  {
+    try
+    {
+      w_pieceType = ai_readSave.substr(w_count,1);
+      w_pieceColor = ai_readSave.substr(w_count + 1,1);
+      w_piecePosition = ai_readSave.substr(w_count + 2,2);
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception caught : " << e.what() << std::endl;
+        return false;
+    }
+    w_count += 4;
+
+    if ( !_setPieceFromFile(w_pieceType, w_pieceColor, w_piecePosition) )
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// Set the player to play
+bool Board::_setPlayerColorFromFile(std::string & ai_playerColor)
+{
+  if (ai_playerColor == "b" )
+  {
+    m_playerColor = E_BLACK;
+    return true;
+  }
+  else if ( ai_playerColor == "w" )
+  {
+    m_playerColor = E_WHITE;
+    return true;
+  }
+  else
+  {
+    std::cout << "[WARNING] Unable to find player turn : file not loaded !" << std::endl;
+    return false;
+  }
+}
+
+bool Board::_setPieceFromFile(std::string & ai_pieceType, std::string & ai_pieceColor, std::string & ai_piecePosition)
+{
+  _intepretePieceType(ai_pieceType);
+
+  _intepretePieceColor(ai_pieceColor);
+
+  _intepretePiecePosition(ai_piecePosition);
+
+  return true;
+}
+
+
+// Interprete the piece type from the string
+PieceEnum Board::_intepretePieceType(std::string & ai_pieceType)
+{
+  if (ai_pieceType == "c")
+  {
+    return E_KNIGHT;
+  }
+  else if (ai_pieceType == "r")
+  {
+    return E_ROOK;
+  }
+  else if (ai_pieceType == "b")
+  {
+    return E_BISHOP;
+  }
+  else if (ai_pieceType == "q")
+  {
+    return E_QUEEN;
+  }
+  else if (ai_pieceType == "k")
+  {
+    return E_KING;
+  }
+  else if (ai_pieceType == "p")
+  {
+    return E_PAWN;
+  }
+  else
+  {
+    return E_UNKNOWN;
+  }
+}
+
+// Interprete the piece color form the string
+ColorEnum Board::_intepretePieceColor(std::string & ai_pieceColor)
+{
+  if (ai_pieceColor == "b")
+  {
+    return E_BLACK;
+  }
+  else if (ai_pieceColor == "w")
+  {
+    return E_WHITE;
+  }
+  else
+  {
+    return E_UNKNOWN_COLOR;
+  }
+}
+
+// Interprete the piece position form the string
+ts_position Board::_intepretePiecePosition(std::string & ai_piecePosition)
+{
+  ts_position w_piecePosition = Constants::C_EOF_POSITION;
+
+  ai_piecePosition = "a"; // For compilation -> TO REMOVE
+
+  return w_piecePosition;
+}
+
 
 // Swap the player color to play
 void Board::_swapPlayerColor()

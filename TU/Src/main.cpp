@@ -55,7 +55,7 @@ int main(int argc, char * argv[])
   CppUnit::CompilerOutputter w_outputter(&w_result, CppUnit::stdCOut());
   w_outputter.write();
 
-  // Print test global  esults in xml file
+  // Print test global results in xml file
   CppUnit::OFileStream w_file("Result_CppUnit.xml");
   CppUnit::XmlOutputter XmlOutputter(&w_result, w_file, "UTF-8");
   XmlOutputter.write();
