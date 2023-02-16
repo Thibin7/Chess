@@ -12,12 +12,11 @@ Game::~Game()
 {}
 
 // Main method that run the game
-void Game::start()
+void Game::start(std::string & w_fileToLoad)
 {
-  std::string w_fileToLoad = "./Saves/test_save.txt";
+  // Creating new board
   Board * w_myBoard = new Board(w_fileToLoad);
   w_myBoard->displayCurrentState();
-
 
   while (true)
   {

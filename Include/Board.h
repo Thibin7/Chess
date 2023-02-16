@@ -22,12 +22,14 @@ class Board
 
     Piece * isPieceOnSquare(ts_position ai_position);
 
-    bool loadGameFile(std::string& ai_filePath);
+    bool loadGameFile(std::string ai_filePath);
 
 
   private:
     std::vector<Piece *> m_currentState;
     ColorEnum m_playerColor {E_WHITE};
+
+    void _createDefaultBoard();
 
     bool _parseFileSave(std::string & ai_readSave);
     bool _setPlayerColorFromFile(std::string & ai_playerColor);
@@ -38,7 +40,9 @@ class Board
 
 
     void _swapPlayerColor();
+
     void _deletePiece(Piece * ai_deletedPiece);
+    void _clearCurrentState();
 
     int _isDiffNeg(int w_endPos, int w_startPos);
     int _numberOfSquareBetween(ts_position ai_startPosition, ts_position ai_endPosition);

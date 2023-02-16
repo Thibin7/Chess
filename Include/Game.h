@@ -12,7 +12,7 @@ class Game
     Game();
     ~Game();
 
-    void start();
+    void start(std::string & w_fileToLoad);
 
   private:
     bool m_isGameStopped {false};
