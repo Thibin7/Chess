@@ -4,8 +4,16 @@
 
 #include "../Include/Game.h"
 
-int main()
+int main(int argc, char * argv[])
 {
   Game myGame;
-  myGame.start();
+  std::string w_filePath = "";
+
+  // We load file given in entry
+  if (argc == 2)
+  {
+    w_filePath = argv[1];
+  }
+
+  myGame.start(w_filePath);
 }

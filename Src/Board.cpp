@@ -12,55 +12,27 @@
 #include "../Include/King.h"
 #include "../Include/Pawn.h"
 
-
-// Constructor
+// Default constructor
 Board::Board()
 {
-  // Creation of white Rooks
-  m_currentState.push_back(new Rook(E_WHITE, this, {0,0}));
-  m_currentState.push_back(new Rook(E_WHITE, this, {7,0}));
-  // Creation of white Knights
-  m_currentState.push_back(new Knight(E_WHITE, this, {1,0}));
-  m_currentState.push_back(new Knight(E_WHITE, this, {6,0}));
-  // Creation of white Bishops
-  m_currentState.push_back(new Bishop(E_WHITE, this, {2,0}));
-  m_currentState.push_back(new Bishop(E_WHITE, this, {5,0}));
-  // Creation of white Queen
-  m_currentState.push_back(new Queen(E_WHITE, this, {3,0}));
-  // Creation of white King
-  m_currentState.push_back(new King(E_WHITE, this, {4,0}));
-  // creation of white Pawns
-  for (int w_counter = 0; w_counter < Constants::C_BOARD_WIDTH; w_counter++)
-  {
-      m_currentState.push_back(new Pawn(E_WHITE, this, {w_counter, 1}));
-  }
-
-
-
-  // Creation of black Rooks
-  m_currentState.push_back(new Rook(E_BLACK, this, {0,7}));
-  m_currentState.push_back(new Rook(E_BLACK, this, {7,7}));
-  // Creation of black Knights
-  m_currentState.push_back(new Knight(E_BLACK, this, {1,7}));
-  m_currentState.push_back(new Knight(E_BLACK, this, {6,7}));
-  // Creation of black Bishops
-  m_currentState.push_back(new Bishop(E_BLACK, this, {2,7}));
-  m_currentState.push_back(new Bishop(E_BLACK, this, {5,7}));
-  // Creation of black Queen
-  m_currentState.push_back(new Queen(E_BLACK, this, {3,7}));
-  // Creation of black King
-  m_currentState.push_back(new King(E_BLACK, this, {4,7}));
-  // creation of black Pawns
-  for (int w_counter = 0; w_counter < Constants::C_BOARD_WIDTH; w_counter++)
-  {
-      m_currentState.push_back(new Pawn(E_BLACK, this, {w_counter,6}));
-  }
+  _createDefaultBoard();
 }
 
-// Construtor to load game save
+// Construtor
 Board::Board(std::string & ai_filePath)
 {
-  loadGameFile(ai_filePath);
+  if (ai_filePath.empty())
+  {
+    _createDefaultBoard();
+  }
+  else // If a file path to load is given
+  {
+    // If game save file is not loaded we create a game by default
+    if ( !loadGameFile(ai_filePath) )
+    {
+      _createDefaultBoard();
+    }
+  }
 }
 
 // Destructor
@@ -196,8 +168,9 @@ Piece * Board::isPieceOnSquare(ts_position ai_position)
 
 // Load a file game save
 // Return true if the file has been correctly loaded
-bool Board::loadGameFile(std::string& ai_filePath)
+bool Board::loadGameFile(std::string ai_filePath)
 {
+  // If no file is given
   if (ai_filePath.empty())
   {
     std::cout << "[WARNING] File path is empty : file not loaded !" << std::endl;
@@ -208,7 +181,7 @@ bool Board::loadGameFile(std::string& ai_filePath)
   std::ifstream w_loadedFile;
   w_loadedFile.open(ai_filePath);
 
-  // If an error occured while openning file
+  // If an error occured while opening file
   if ( !w_loadedFile.is_open() )
   {
     std::cout << "[WARNING] Cannot open file : file not loaded !" << std::endl;
@@ -216,19 +189,28 @@ bool Board::loadGameFile(std::string& ai_filePath)
   }
   else
   {
+    // We clear the current piece Vector
+    _clearCurrentState();
+
     // Reading first line of file
     std::string w_readSave;
     std::getline(w_loadedFile, w_readSave);
 
-    _parseFileSave(w_readSave);
+    // Parsing save file
+    if ( !_parseFileSave(w_readSave) )
+    {
+        return false;
+    }
   }
 
+  std::cout << "File successfuly loaded !" << std::endl;
   return true;
 }
 
 // Parse what we read from the save file
 bool Board::_parseFileSave(std::string & ai_readSave)
 {
+  // If what we read is empty
   if ( ai_readSave.empty() )
   {
     std::cout << "[WARNING] Nothing to read in save file : file not loaded !" << std::endl;
@@ -241,11 +223,9 @@ bool Board::_parseFileSave(std::string & ai_readSave)
     return false;
   }
 
-
   std::string w_pieceType;
   std::string w_pieceColor;
   std::string w_piecePosition;
-
 
   int w_readFileLen = ai_readSave.length();
   int w_count = 1;
@@ -266,8 +246,11 @@ bool Board::_parseFileSave(std::string & ai_readSave)
     }
     w_count += 4;
 
+    // If an error occurs when piece is construct
     if ( !_setPieceFromFile(w_pieceType, w_pieceColor, w_piecePosition) )
     {
+      // We clear the piece vector
+      _clearCurrentState();
       return false;
     }
   }
@@ -295,17 +278,70 @@ bool Board::_setPlayerColorFromFile(std::string & ai_playerColor)
   }
 }
 
+// Create piece and add it to the current state
 bool Board::_setPieceFromFile(std::string & ai_pieceType, std::string & ai_pieceColor, std::string & ai_piecePosition)
 {
-  _intepretePieceType(ai_pieceType);
+  PieceEnum w_pieceType = _intepretePieceType(ai_pieceType);
+  ColorEnum w_pieceColor = _intepretePieceColor(ai_pieceColor);
+  ts_position w_piecePosition = _intepretePiecePosition(ai_piecePosition);
 
-  _intepretePieceColor(ai_pieceColor);
+  if ( w_pieceType == E_UNKNOWN )
+  {
+    std::cout << "[WARNING] Unable to find piece Type : file not loaded !" << std::endl;
+    return false;
+  }
 
-  _intepretePiecePosition(ai_piecePosition);
+  if ( w_pieceColor == E_UNKNOWN_COLOR )
+  {
+    std::cout << "[WARNING] Unable to find piece Color : file not loaded !" << std::endl;
+    return false;
+  }
+
+  if ( w_piecePosition == Constants::C_EOF_POSITION )
+  {
+    std::cout << "[WARNING] Unable to find piece Position : file not loaded !" << std::endl;
+    return false;
+  }
+
+  // Create piece and adding it into the piece vector
+  switch (w_pieceType)
+  {
+    case E_PAWN:
+    {
+      m_currentState.push_back(new Pawn(w_pieceColor, this, w_piecePosition));
+      break;
+    }
+    case E_KNIGHT:
+    {
+      m_currentState.push_back(new Knight(w_pieceColor, this, w_piecePosition));
+      break;
+    }
+    case E_BISHOP:
+    {
+      m_currentState.push_back(new Bishop(w_pieceColor, this, w_piecePosition));
+      break;
+    }
+    case E_ROOK:
+    {
+      m_currentState.push_back(new Rook(w_pieceColor, this, w_piecePosition));
+      break;
+    }
+    case E_QUEEN:
+    {
+      m_currentState.push_back(new Queen(w_pieceColor, this, w_piecePosition));
+      break;
+    }
+    case E_KING:
+    {
+      m_currentState.push_back(new King(w_pieceColor, this, w_piecePosition));
+      break;
+    }
+    default:
+    {}
+  }
 
   return true;
 }
-
 
 // Interprete the piece type from the string
 PieceEnum Board::_intepretePieceType(std::string & ai_pieceType)
@@ -360,13 +396,69 @@ ColorEnum Board::_intepretePieceColor(std::string & ai_pieceColor)
 // Interprete the piece position form the string
 ts_position Board::_intepretePiecePosition(std::string & ai_piecePosition)
 {
-  ts_position w_piecePosition = Constants::C_EOF_POSITION;
+  if (ai_piecePosition.length() < 2)
+  {
+    return Constants::C_EOF_POSITION;
+  }
 
-  ai_piecePosition = "a"; // For compilation -> TO REMOVE
+  // We convert the first input to an int using ASCII soustraction
+  int w_posX  = ai_piecePosition[0] - 'a' + '1';
+  int w_posY  = ai_piecePosition[1] - 'a' + '1';
 
-  return w_piecePosition;
+  if ( (abs(w_posX) > 7)
+    || (abs(w_posY) > 7) )
+  {
+      return Constants::C_EOF_POSITION;
+  }
+
+  return {w_posX, w_posY};
 }
 
+// Create default board
+void Board::_createDefaultBoard()
+{
+  _clearCurrentState();
+
+  // Creation of white Rooks
+  m_currentState.push_back(new Rook(E_WHITE, this, {0,0}));
+  m_currentState.push_back(new Rook(E_WHITE, this, {7,0}));
+  // Creation of white Knights
+  m_currentState.push_back(new Knight(E_WHITE, this, {1,0}));
+  m_currentState.push_back(new Knight(E_WHITE, this, {6,0}));
+  // Creation of white Bishops
+  m_currentState.push_back(new Bishop(E_WHITE, this, {2,0}));
+  m_currentState.push_back(new Bishop(E_WHITE, this, {5,0}));
+  // Creation of white Queen
+  m_currentState.push_back(new Queen(E_WHITE, this, {3,0}));
+  // Creation of white King
+  m_currentState.push_back(new King(E_WHITE, this, {4,0}));
+  // creation of white Pawns
+  for (int w_counter = 0; w_counter < Constants::C_BOARD_WIDTH; w_counter++)
+  {
+      m_currentState.push_back(new Pawn(E_WHITE, this, {w_counter, 1}));
+  }
+
+
+
+  // Creation of black Rooks
+  m_currentState.push_back(new Rook(E_BLACK, this, {0,7}));
+  m_currentState.push_back(new Rook(E_BLACK, this, {7,7}));
+  // Creation of black Knights
+  m_currentState.push_back(new Knight(E_BLACK, this, {1,7}));
+  m_currentState.push_back(new Knight(E_BLACK, this, {6,7}));
+  // Creation of black Bishops
+  m_currentState.push_back(new Bishop(E_BLACK, this, {2,7}));
+  m_currentState.push_back(new Bishop(E_BLACK, this, {5,7}));
+  // Creation of black Queen
+  m_currentState.push_back(new Queen(E_BLACK, this, {3,7}));
+  // Creation of black King
+  m_currentState.push_back(new King(E_BLACK, this, {4,7}));
+  // creation of black Pawns
+  for (int w_counter = 0; w_counter < Constants::C_BOARD_WIDTH; w_counter++)
+  {
+      m_currentState.push_back(new Pawn(E_BLACK, this, {w_counter,6}));
+  }
+}
 
 // Swap the player color to play
 void Board::_swapPlayerColor()
@@ -401,6 +493,20 @@ void Board::_deletePiece(Piece * ai_deletedPiece)
         return;
       }
   }
+}
+
+// Delete all pieces from the current state
+void Board::_clearCurrentState()
+{
+  std::vector<Piece *>::iterator it_currentState = m_currentState.begin();
+
+  for (; it_currentState != m_currentState.end(); it_currentState++)
+  {
+    delete *it_currentState;
+  }
+
+  m_currentState.clear();
+  return;
 }
 
 // Check if the difference between to number is negatif or positif
