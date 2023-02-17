@@ -123,6 +123,13 @@ void Board::processMove(ts_position ai_startPosition, ts_position ai_endPosition
     return ;
   }
 
+  // If the same color king is check
+  if ( _isSameColorKingCheck(w_startPiece, ai_endPosition) )
+  {
+    std::cout << "[Error] Movement not valid, your king is check !" << std::endl;
+    return ;
+  }
+
   // If all is OK we delete the endPiece (if exists), we move the piece and swap the player color
   _deletePiece(w_endPiece);
   w_startPiece->setPosition(ai_endPosition);
@@ -412,6 +419,49 @@ ts_position Board::_intepretePiecePosition(std::string & ai_piecePosition)
   }
 
   return {w_posX, w_posY};
+}
+
+bool Board::_isSameColorKingCheck(Piece * ai_startPiece, ts_position & ai_endPosition)
+{
+  // Saving actual piece position
+  ts_position w_startPiecePosition = ai_startPiece->getPosition();
+
+  // Getting same color king position
+  ts_position w_sameColorKingPos = _getKingPosition(ai_startPiece->getColor());
+
+  // Simulate piece movement
+  ai_startPiece->setPosition(ai_endPosition);
+
+  // For every piece of the opposite color we check if he can take the king
+  std::vector<Piece *>::iterator w_pieceIt = m_currentState.begin();
+  for (; w_pieceIt != m_currentState.end(); w_pieceIt++)
+  {
+    if ( ((*w_pieceIt)->getColor() != ai_startPiece->getColor()) && (*w_pieceIt)->isMovementValid(w_sameColorKingPos) )
+    {
+      // Repositionning piece on old square
+      ai_startPiece->setPosition(w_startPiecePosition);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// Getting the king position of the given color
+ts_position Board::_getKingPosition(ColorEnum ai_kingColor)
+{
+  std::vector<Piece *>::iterator w_pieceIt = m_currentState.begin();
+
+  for (; w_pieceIt != m_currentState.end(); w_pieceIt++)
+  {
+    if ( ((*w_pieceIt)->getColor() == ai_kingColor) && (*w_pieceIt)->getName() == E_KING )
+    {
+      return (*w_pieceIt)->getPosition();
+    }
+  }
+
+  // Shouldn't append !
+  return Constants::C_EOF_POSITION;
 }
 
 // Create default board
