@@ -7,6 +7,10 @@ const std::string C_KNIGHT_DEFAULT_MOV_FILE_PATH = "./parameters/test_knight_def
 const std::string C_KNIGHT_BLOCKED_MOV_FILE_PATH = "./parameters/test_knight_blocked_movement.txt";
 const std::string C_KNIGHT_CAPTURE_FILE_PATH     = "./parameters/test_knight_capture.txt";
 
+const std::string C_BISHOP_DEFAULT_MOV_FILE_PATH = "./parameters/test_bishop_default_movement.txt";
+const std::string C_BISHOP_BLOCKED_MOV_FILE_PATH = "./parameters/test_bishop_blocked_movement.txt";
+const std::string C_BISHOP_CAPTURE_FILE_PATH     = "./parameters/test_bishop_capture.txt";
+
 CPPUNIT_TEST_SUITE_REGISTRATION(ChessTest);
 
 ChessTest::ChessTest()
@@ -28,12 +32,22 @@ void ChessTest::tearDown()
   }
 }
 
+/**
+ *  Test_knight : test the movement of the knight Piece
+ *
+ *  STEP 1 : Test that the default movement of the knight is correct
+ *
+ *  STEP 2 : Test that the knight cannot capture a same-color piece or go out of the board
+ *
+ *  STEP 3 : Test that the knight can capture other color pieces
+ **/
 void ChessTest::test_knight()
 {
   _setup(C_KNIGHT_DEFAULT_MOV_FILE_PATH);
 
-
-  // STEP 1
+  /*
+   *  STEP 1
+   */
   const ts_position C_KNIGHT_POS_DEFAULT_MOV = {3,4}; // Knight position on the file C_KNIGHT_DEFAULT_MOV_FILE_PATH
   const std::vector<ts_position> C_VEC_VALID_KNIGHT_MOVE{{4,6},{5,5},{5,3},{4,2},{2,2},{1,3},{1,5},{2,6}}; // All valid move for the knight
   _checkPiece(__FUNCTION__, __LINE__, C_KNIGHT_POS_DEFAULT_MOV, E_KNIGHT, E_WHITE); // Check if file correctly loaded
@@ -43,7 +57,9 @@ void ChessTest::test_knight()
   _checkDefaultMovement(__FUNCTION__, __LINE__, C_KNIGHT_DEFAULT_MOV_FILE_PATH, E_KNIGHT, E_WHITE, C_KNIGHT_POS_DEFAULT_MOV, C_VEC_VALID_KNIGHT_MOVE);
 
 
-  // STEP 2
+  /*
+   *  STEP 2
+   */
   const ts_position C_KNIGHT_POS_MAIN  = {2,6};  // Main knight position we want to test on the file C_KNIGHT_BLOCKED_MOV_FILE_PATH
   const ts_position C_KNIGHT_POS_OTHER = {0,5};  // Other knight position on the file C_KNIGHT_BLOCKED_MOV_FILE_PATH
   const ts_position C_PAWN_POS         = {0,7};  // Pawn position on the file C_KNIGHT_BLOCKED_MOV_FILE_PATH
@@ -52,7 +68,7 @@ void ChessTest::test_knight()
   const ts_position C_ROOK_POS         = {1,4};  // Rook position on the file C_KNIGHT_BLOCKED_MOV_FILE_PATH
   const ts_position C_BISHOP_POS       = {3,4};  // Bishop position on the file C_KNIGHT_BLOCKED_MOV_FILE_PATH
 
-  // Vector of all piece position (except main Knight)
+  // Vector of all pieces position (except main Knight)
   const std::vector<ts_position> C_OTHER_PIECE_POSITION {C_KNIGHT_POS_MAIN,
                                                             C_KNIGHT_POS_OTHER ,
                                                              C_PAWN_POS,
@@ -77,7 +93,9 @@ void ChessTest::test_knight()
   _checkBlockedMovement(__FUNCTION__, __LINE__, E_KNIGHT, E_BLACK, C_KNIGHT_POS_MAIN, C_OTHER_PIECE_POSITION);
 
 
-  // STEP 3
+  /*
+   *  STEP 3
+   */
   const ts_position C_WHITE_KNIGHT_POS = {3,4};  // Main knight position we want to test on the file C_KNIGHT_CAPTURE_FILE_PATH
   const ts_position C_BLACK_KNIGHT_POS = {4,6};  // Other knight position on the file C_KNIGHT_CAPTURE_FILE_PATH
   const ts_position C_BLACK_PAWN_POS   = {4,2};  // Pawn position on the file C_KNIGHT_CAPTURE_FILE_PATH
@@ -86,8 +104,7 @@ void ChessTest::test_knight()
   const ts_position C_BLACK_BISHOP_POS = {5,5};  // Bishop position on the file C_KNIGHT_CAPTURE_FILE_PATH
 
   // Vector of all piece position (except main Knight)
-  const std::vector<ts_position> C_WHITE_PIECE_POSITION {C_WHITE_KNIGHT_POS,
-                                                        C_BLACK_KNIGHT_POS ,
+  const std::vector<ts_position> C_BLACK_PIECE_POSITION {C_BLACK_KNIGHT_POS ,
                                                         C_BLACK_PAWN_POS,
                                                         C_BLACK_QUEEN_POS,
                                                         C_BLACK_ROOK_POS,
@@ -104,117 +121,126 @@ void ChessTest::test_knight()
   _checkPiece(__FUNCTION__, __LINE__, C_BLACK_ROOK_POS, E_ROOK, E_BLACK);
   _checkPiece(__FUNCTION__, __LINE__, C_BLACK_BISHOP_POS, E_BISHOP, E_BLACK);
 
-
-
-  // // Position of the 2 of the knight on the board
-  // ts_position w_whiteKnightPosition = {1,0};
-  // ts_position w_blackKnightPosition = {6,7};
-  //
-  // // First move [white knight] -> can move away from start square
-  // std::cout << "[TEST] [INFO] " << "[" << __FUNCTION__ << ": " << __LINE__ << "] " << "Checking Default Knight Move" << std::endl;
-  // mp_board->processMove( w_whiteKnightPosition ,{2,2});
-  // Piece * wp_knightPiece = mp_board->isPieceOnSquare({2,2});
-  // _checkPiece(__FUNCTION__, __LINE__, wp_knightPiece, E_KNIGHT, E_WHITE);
-  // w_whiteKnightPosition = {2,2}; // Update knight position
-  //
-  // // Second move [black knight] -> cannot move on a square were a black piece [black pawn] is
-  // // The knigt have to stay on his square and the blocking pawn should still be there
-  // std::cout << "[TEST] [INFO] " << "[" << __FUNCTION__ << ": " << __LINE__ << "] " << "Checking Knight blocked by same color piece" << std::endl;
-  // mp_board->processMove(w_blackKnightPosition,{4,6});
-  // wp_knightPiece = mp_board->isPieceOnSquare(w_blackKnightPosition);
-  // Piece * wp_pawnPiece = mp_board->isPieceOnSquare({4,6});
-  // _checkPiece(__FUNCTION__, __LINE__, wp_knightPiece, E_KNIGHT, E_BLACK);
-  // _checkPiece(__FUNCTION__, __LINE__, wp_pawnPiece, E_PAWN, E_BLACK);
-  //
-  // // Third move [black knight] -> cannot move if movement not valid
-  // std::cout << "[TEST] [INFO] " << "[" << __FUNCTION__ << ": " << __LINE__ << "] " << "Checking Knight invalid movement" << std::endl;
-  // mp_board->processMove(w_blackKnightPosition,{6,5});
-  // wp_knightPiece = mp_board->isPieceOnSquare(w_blackKnightPosition);
-  // _checkPiece(__FUNCTION__, __LINE__, wp_knightPiece, E_KNIGHT, E_BLACK);
-  //
-  // // Fourth move [black knight] -> cannot move if movement out of board
-  // std::cout << "[TEST] [INFO] " << "[" << __FUNCTION__ << ": " << __LINE__ << "] " << "Checking Knight out of bound movement" << std::endl;
-  // mp_board->processMove(w_blackKnightPosition,{7,9});
-  // wp_knightPiece = mp_board->isPieceOnSquare(w_blackKnightPosition);
-  // _checkPiece(__FUNCTION__, __LINE__, wp_knightPiece, E_KNIGHT, E_BLACK);
-  //
-  // // Fifth move [black and white knight] -> knight can "take" anothe piece -> test is blackKnight2 can take whiteknight1
-  // std::cout << "[TEST] [INFO] " << "[" << __FUNCTION__ << ": " << __LINE__ << "] " << "Checking Knight can take a piece" << std::endl;
-  // mp_board->processMove( w_blackKnightPosition ,{5,5});
-  // wp_knightPiece = mp_board->isPieceOnSquare({5,5});
-  // _checkPiece(__FUNCTION__, __LINE__, wp_knightPiece, E_KNIGHT, E_BLACK);
-  // w_blackKnightPosition = {5,5}; // Update knight position
-  //
-  // mp_board->processMove( w_whiteKnightPosition ,{4,3});
-  // wp_knightPiece = mp_board->isPieceOnSquare({4,3});
-  // _checkPiece(__FUNCTION__, __LINE__, wp_knightPiece, E_KNIGHT, E_WHITE);
-  // w_whiteKnightPosition = {4,3}; // Update knight position
-  //
-  // mp_board->processMove( w_blackKnightPosition ,{4,3});
-  // wp_knightPiece = mp_board->isPieceOnSquare({4,3});
-  // _checkPiece(__FUNCTION__, __LINE__, wp_knightPiece, E_KNIGHT, E_BLACK);
-  // w_blackKnightPosition = {4,3}; // Update knight position
+  //Checking default knight movement
+  _checkCaptureMovement(__FUNCTION__, __LINE__, C_KNIGHT_CAPTURE_FILE_PATH, E_KNIGHT, E_WHITE, C_WHITE_KNIGHT_POS, C_BLACK_PIECE_POSITION);
 }
 
+
+/**
+ *  Test_bishop : test the movement of the bishop Piece
+ *
+ *  STEP 1 : Test that the default movement of the bishop is correct
+ *
+ *  STEP 2 : Test that the bishop cannot capture a same-color piece or go out of the board
+ *
+ *  STEP 3 : Test that the bishop can capture other color pieces
+ **/
 void ChessTest::test_bishop()
 {
-  // _checkDefaultBoard(__FUNCTION__, __LINE__);
-  //
-  // // Position of the 2 of the bishop on the board
-  // ts_position w_whiteBishopPosition = {2,0};
-  // ts_position w_blackBishopPosition = {2,7};
-  //
-  // // First move [white knight] -> can move away from start square
-  // std::cout << "[TEST] [INFO] " << "[" << __FUNCTION__ << ": " << __LINE__ << "] " << "Checking Default Bishop Move" << std::endl;
-  // mp_board->processMove({3,1},{3,3}); // Move away a blocking white pawn
-  // Piece * wp_pawnPiece = mp_board->isPieceOnSquare({3,3});
-  // _checkPiece(__FUNCTION__, __LINE__, wp_pawnPiece, E_PAWN, E_WHITE); // Pawn has been moved
-  // mp_board->processMove({1,6},{1,4}); // Move away a blocking black pawn
-  // wp_pawnPiece = mp_board->isPieceOnSquare({1,4});
-  // _checkPiece(__FUNCTION__, __LINE__, wp_pawnPiece, E_PAWN, E_BLACK); // Pawn has been moved
-  //
-  // mp_board->processMove( w_whiteBishopPosition ,{5,3});
-  // Piece * wp_bishopPiece = mp_board->isPieceOnSquare({5,3});
-  // _checkPiece(__FUNCTION__, __LINE__, wp_bishopPiece, E_BISHOP, E_WHITE);
-  // w_whiteBishopPosition = {5,3}; // Update bishop position
-  //
-  // // Second move [black bishop] -> cannot move on a square were a black piece [black pawn] is
-  // // The bishop have to stay on his square and the blocking pawn should still be there
-  // std::cout << "[TEST] [INFO] " << "[" << __FUNCTION__ << ": " << __LINE__ << "] " << "Checking bishop blocked by same color piece" << std::endl;
-  // mp_board->processMove(w_blackBishopPosition,{3,6});
-  // wp_bishopPiece = mp_board->isPieceOnSquare(w_blackBishopPosition);
-  // wp_pawnPiece = mp_board->isPieceOnSquare({3,6});
-  // _checkPiece(__FUNCTION__, __LINE__, wp_bishopPiece, E_BISHOP, E_BLACK);
-  // _checkPiece(__FUNCTION__, __LINE__, wp_pawnPiece, E_PAWN, E_BLACK);
-  //
-  // // Third move [black bishop] -> cannot move if movement not valid
-  // std::cout << "[TEST] [INFO] " << "[" << __FUNCTION__ << ": " << __LINE__ << "] " << "Checking Bishop invalid movement" << std::endl;
-  // mp_board->processMove(w_blackBishopPosition,{1,5});
-  // wp_bishopPiece = mp_board->isPieceOnSquare(w_blackBishopPosition);
-  // _checkPiece(__FUNCTION__, __LINE__, wp_bishopPiece, E_BISHOP, E_BLACK);
-  //
-  // // Fourth move [black knight] -> cannot move if movement out of board
-  // std::cout << "[TEST] [INFO] " << "[" << __FUNCTION__ << ": " << __LINE__ << "] " << "Checking Bishop out of bound movement" << std::endl;
-  // mp_board->processMove(w_blackBishopPosition,{3,8});
-  // wp_bishopPiece = mp_board->isPieceOnSquare(w_blackBishopPosition);
-  // _checkPiece(__FUNCTION__, __LINE__, wp_bishopPiece, E_BISHOP, E_BLACK);
-  //
-  // // Fifth move [black & white bishop] -> bishop can "take" another piece
-  // std::cout << "[TEST] [INFO] " << "[" << __FUNCTION__ << ": " << __LINE__ << "] " << "Checking Bishop can take a piece" << std::endl;
-  // mp_board->processMove( w_blackBishopPosition ,{0,5});
-  // wp_bishopPiece = mp_board->isPieceOnSquare({0,5});
-  // _checkPiece(__FUNCTION__, __LINE__, wp_bishopPiece, E_BISHOP, E_BLACK);
-  // w_blackBishopPosition = {0,5}; // Update bishop position
-  //
-  // // Checking there is actually a black piece on the square
-  // wp_pawnPiece = mp_board->isPieceOnSquare({2,6});
-  // _checkPiece(__FUNCTION__, __LINE__, wp_pawnPiece, E_PAWN, E_BLACK);
-  //
-  // // ove the white bishop on the same square
-  // mp_board->processMove( w_whiteBishopPosition ,{2,6});
-  // wp_bishopPiece = mp_board->isPieceOnSquare({2,6});
-  // _checkPiece(__FUNCTION__, __LINE__, wp_bishopPiece, E_BISHOP, E_WHITE);
-  // w_whiteBishopPosition = {4,1}; // Update bishop position
+  _setup(C_BISHOP_DEFAULT_MOV_FILE_PATH);
+
+  /*
+   *  STEP 1
+   */
+  const ts_position C_BISHOP_POS_DEFAULT_MOV = {3,4}; // Bishop position on the file C_KNIGHT_DEFAULT_MOV_FILE_PATH
+  const std::vector<ts_position> C_VEC_VALID_BISHOP_MOVE{{0,7},{1,6},{2,5},{4,3},{5,2},{6,1},{7,0},{6,7},{5,6},{4,5},{2,3},{1,2},{0,1}}; // All valid move for the bishop
+  _checkPiece(__FUNCTION__, __LINE__, C_BISHOP_POS_DEFAULT_MOV, E_BISHOP, E_WHITE); // Check if file correctly loaded
+
+
+  //Checking default bishop movement
+  _checkDefaultMovement(__FUNCTION__, __LINE__, C_BISHOP_DEFAULT_MOV_FILE_PATH, E_BISHOP, E_WHITE, C_BISHOP_POS_DEFAULT_MOV, C_VEC_VALID_BISHOP_MOVE);
+
+
+  /*
+   *  STEP 2
+   */
+  const ts_position C_BISHOP_POS_MAIN_1 = {3,3};  // First Main bishop position we want to test on the file C_BISHOP_BLOCKED_MOV_FILE_PATH
+  const ts_position C_QUEEN_POS         = {7,7};  // Queen position on the file C_BISHOP_BLOCKED_MOV_FILE_PATH
+  const ts_position C_PAWN_POS          = {2,4};  // Pawn position on the file C_BISHOP_BLOCKED_MOV_FILE_PATH
+  const ts_position C_KNIGHT_POS        = {5,1};  // Knight position on the file C_BISHOP_BLOCKED_MOV_FILE_PATH
+  const ts_position C_BISHOP_POS_OTHER  = {0,0};  // Other bishop position on the file C_BISHOP_BLOCKED_MOV_FILE_PATH
+
+  const ts_position C_BISHOP_POS_MAIN_2 = {2,7};  // Second Main bishop position we want to test on the file C_BISHOP_BLOCKED_MOV_FILE_PATH
+  const ts_position C_ROOK_POS          = {3,6};  // Rook position on the file C_BISHOP_BLOCKED_MOV_FILE_PATH
+  const ts_position C_KING_POS          = {0,5};  // King position on the file C_BISHOP_BLOCKED_MOV_FILE_PATH
+
+  // Vector of all blocked position (except main_1 Bishop) for first test 1
+  const std::vector<ts_position> C_BLOCKED_SQUARES_1 {C_BISHOP_POS_MAIN_1,
+                                                    C_QUEEN_POS ,
+                                                    C_PAWN_POS,
+                                                    C_KNIGHT_POS,
+                                                    C_BISHOP_POS_OTHER,
+                                                    {0,6}, // Square blocked by pawn
+                                                    {1,5}, // Square blocked by pawn
+                                                    {6,0}}; // Square blocked by knight
+
+  // Vector of all blocked position (except main_2 Bishop) for first test 2
+  const std::vector<ts_position> C_BLOCKED_SQUARES_2 {C_BISHOP_POS_MAIN_2,
+                                                      C_ROOK_POS ,
+                                                      C_KING_POS,
+                                                      {4,5}, // Square blocked by rook
+                                                      {5,4}, // Square blocked by rook
+                                                      {6,3}, // Square blocked by rook
+                                                      {7,2}}; // Square blocked by rook
+
+  // Loading test file
+  mp_board->loadGameFile(C_BISHOP_BLOCKED_MOV_FILE_PATH);
+
+  // Check if file correctly loaded
+  _checkPiece(__FUNCTION__, __LINE__, C_BISHOP_POS_MAIN_1, E_BISHOP, E_BLACK);
+  _checkPiece(__FUNCTION__, __LINE__, C_BISHOP_POS_MAIN_2, E_BISHOP, E_BLACK);
+  _checkPiece(__FUNCTION__, __LINE__, C_QUEEN_POS, E_QUEEN, E_BLACK);
+  _checkPiece(__FUNCTION__, __LINE__, C_PAWN_POS, E_PAWN, E_BLACK);
+  _checkPiece(__FUNCTION__, __LINE__, C_KNIGHT_POS, E_KNIGHT, E_BLACK);
+  _checkPiece(__FUNCTION__, __LINE__, C_BISHOP_POS_OTHER, E_BISHOP, E_BLACK);
+  _checkPiece(__FUNCTION__, __LINE__, C_ROOK_POS, E_ROOK, E_BLACK);
+  _checkPiece(__FUNCTION__, __LINE__, C_KING_POS, E_KING, E_BLACK);
+
+  //Checking default knight movement
+  _checkBlockedMovement(__FUNCTION__, __LINE__, E_BISHOP, E_BLACK, C_BISHOP_POS_MAIN_1, C_BLOCKED_SQUARES_1);
+  _checkBlockedMovement(__FUNCTION__, __LINE__, E_BISHOP, E_BLACK, C_BISHOP_POS_MAIN_2, C_BLOCKED_SQUARES_2);
+
+
+  /*
+   *  STEP 3
+   */
+  const ts_position C_WHITE_BISHOP_POS_1 = {3,4};  // First bishop position we want to test on the file C_BISHOP_CAPTURE_FILE_PATH
+  const ts_position C_BLACK_BISHOP_POS   = {5,6};  // Other bishop position on the file C_BISHOP_CAPTURE_FILE_PATH
+  const ts_position C_BLACK_ROOK_POS     = {2,5};  // Rook position on the file C_BISHOP_CAPTURE_FILE_PATH
+  const ts_position C_BLACK_QUEEN_POS    = {0,1};  // Queen position on the file C_BISHOP_CAPTURE_FILE_PATH
+  const ts_position C_BLACK_KNIGHT_POS   = {7,0};  // Knight position on the file C_BISHOP_CAPTURE_FILE_PATH
+
+  const ts_position C_WHITE_BISHOP_POS_2 = {4,0};  // Second bishop position we want to test on the file C_BISHOP_CAPTURE_FILE_PATH
+  const ts_position C_BLACK_KNIGHT_POS_2 = {2,2};  // Knight position on the file C_BISHOP_CAPTURE_FILE_PATH
+  const ts_position C_BLACK_PAWN_POS     = {5,1};  // Knight position on the file C_BISHOP_CAPTURE_FILE_PATH
+
+  // Vector of all piece position (except main Bishop) for test 1
+  const std::vector<ts_position> C_BLACK_PIECE_POSITION_1 {C_BLACK_BISHOP_POS ,
+                                                          C_BLACK_ROOK_POS,
+                                                          C_BLACK_QUEEN_POS,
+                                                          C_BLACK_KNIGHT_POS};
+
+  // Vector of all piece position (except main Bishop) for test 2
+  const std::vector<ts_position> C_BLACK_PIECE_POSITION_2 {C_BLACK_KNIGHT_POS_2 ,
+                                                          C_BLACK_PAWN_POS};
+
+  // Loading test file
+  mp_board->loadGameFile(C_BISHOP_CAPTURE_FILE_PATH);
+
+  // Check if file correctly loaded
+  _checkPiece(__FUNCTION__, __LINE__, C_WHITE_BISHOP_POS_1, E_BISHOP, E_WHITE);
+  _checkPiece(__FUNCTION__, __LINE__, C_WHITE_BISHOP_POS_2, E_BISHOP, E_WHITE);
+  _checkPiece(__FUNCTION__, __LINE__, C_BLACK_BISHOP_POS, E_BISHOP, E_BLACK);
+  _checkPiece(__FUNCTION__, __LINE__, C_BLACK_ROOK_POS, E_ROOK, E_BLACK);
+  _checkPiece(__FUNCTION__, __LINE__, C_BLACK_QUEEN_POS, E_QUEEN, E_BLACK);
+  _checkPiece(__FUNCTION__, __LINE__, C_BLACK_KNIGHT_POS, E_KNIGHT, E_BLACK);
+  _checkPiece(__FUNCTION__, __LINE__, C_BLACK_KNIGHT_POS_2, E_KNIGHT, E_BLACK);
+  _checkPiece(__FUNCTION__, __LINE__, C_BLACK_PAWN_POS, E_PAWN, E_BLACK);
+
+  //Checking default bishop movement
+  _checkCaptureMovement(__FUNCTION__, __LINE__, C_BISHOP_CAPTURE_FILE_PATH, E_BISHOP, E_WHITE, C_WHITE_BISHOP_POS_1, C_BLACK_PIECE_POSITION_1);
+  _checkCaptureMovement(__FUNCTION__, __LINE__, C_BISHOP_CAPTURE_FILE_PATH, E_BISHOP, E_WHITE, C_WHITE_BISHOP_POS_2, C_BLACK_PIECE_POSITION_2);
+
 }
 
 void ChessTest::test_rook()
@@ -386,6 +412,7 @@ void ChessTest::_checkDefaultMovement(const std::string & ai_func,
   // To know the caller
   std::stringstream w_caller;
   w_caller << "[" << ai_func << ": " << ai_line << "]";
+  std::cout << " [TEST] [INFO] Testing default movement : " << w_caller.str() << std::endl;
 
   //Checking default knight movement
   for (int w_cntWidth = 0; w_cntWidth < Constants::C_BOARD_WIDTH; w_cntWidth++)
@@ -420,36 +447,59 @@ void ChessTest::_checkBlockedMovement(const std::string & ai_func,
                                       const PieceEnum ai_pieceType,
                                       const ColorEnum ai_pieceColor,
                                       const ts_position ai_startPiecePosition,
-                                      const std::vector<ts_position> ai_otherPiecePosition)
+                                      const std::vector<ts_position> ai_blockedSquares)
 {
   // To know the caller
   std::stringstream w_caller;
   w_caller << "[" << ai_func << ": " << ai_line << "]";
+  std::cout << " [TEST] [INFO] Testing blocked movement : " << w_caller.str()  << std::endl;
 
-  //Checking default knight movement
+  //Checking default piece movement
   for (int w_cntWidth = -1; w_cntWidth < Constants::C_BOARD_WIDTH + 1; w_cntWidth++)
   {
     for (int w_cntHeight = -1; w_cntHeight < Constants::C_BOARD_HEIGTH + 1; w_cntHeight++)
     {
       ts_position w_testedSquare = {w_cntWidth,w_cntHeight};
-      mp_board->processMove( ai_startPiecePosition ,w_testedSquare);
 
-      // Verifying that main knight doesn't moved
-      std::cout << " [TEST] [INFO] Testing piece hasn't moved" << std::endl;
-      _checkPiece(__FUNCTION__, __LINE__, ai_startPiecePosition, ai_pieceType, ai_pieceColor);
+      // If the square is a blocked one or if the square is out of board
+      if ( TestTools::isInVector<ts_position>(ai_blockedSquares, w_testedSquare)  || (w_cntWidth < 0) || (w_cntHeight < 0))
+      {
+        mp_board->processMove( ai_startPiecePosition ,w_testedSquare);
 
-      // If a piece is on the way we verify that it is still here
-      if ( TestTools::isInVector<ts_position>(ai_otherPiecePosition, w_testedSquare) )
-      {
-        _checkSquareTaken(__FUNCTION__, __LINE__, w_testedSquare);
-      }
-      else
-      {
-        _checkSquareEmpty(__FUNCTION__, __LINE__, w_testedSquare);
+        // Verifying that main piece doesn't moved
+        std::cout << " [TEST] [INFO] Testing piece hasn't moved" << std::endl;
+        _checkPiece(__FUNCTION__, __LINE__, ai_startPiecePosition, ai_pieceType, ai_pieceColor);
       }
 
       // No need to load file again because movement should have been unvalid
     }
+  }
+}
+
+// Check that piece can capture the other pieces
+void ChessTest::_checkCaptureMovement(const std::string & ai_func,
+                                      const unsigned int & ai_line,
+                                      const std::string ai_filePath,
+                                      const PieceEnum ai_pieceType,
+                                      const ColorEnum ai_pieceColor,
+                                      const ts_position ai_startPiecePosition,
+                                      const std::vector<ts_position> ai_otherPiecePosition)
+{
+  // To know the caller
+  std::stringstream w_caller;
+  w_caller << "[" << ai_func << ": " << ai_line << "]";
+  std::cout << " [TEST] [INFO] Testing capture movement : " << w_caller.str() << std::endl;
+
+  std::vector<ts_position>::const_iterator w_pieceIt = ai_otherPiecePosition.begin();
+
+  for (; w_pieceIt != ai_otherPiecePosition.end(); w_pieceIt++)
+  {
+      mp_board->processMove( ai_startPiecePosition , *w_pieceIt);
+
+      _checkPiece(__FUNCTION__, __LINE__, *w_pieceIt, ai_pieceType, ai_pieceColor);
+      _checkSquareEmpty(__FUNCTION__, __LINE__, ai_startPiecePosition);
+
+      mp_board->loadGameFile(ai_filePath);
   }
 }
 
