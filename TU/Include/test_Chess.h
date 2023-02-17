@@ -10,7 +10,7 @@ class ChessTest : public CppUnit::TestFixture
   public:
     CPPUNIT_TEST_SUITE(ChessTest);
     CPPUNIT_TEST(test_knight);
-    //CPPUNIT_TEST(test_bishop);
+    CPPUNIT_TEST(test_bishop);
     //CPPUNIT_TEST(test_rook);
     //CPPUNIT_TEST(test_king);
     CPPUNIT_TEST_SUITE_END();
@@ -46,6 +46,14 @@ class ChessTest : public CppUnit::TestFixture
 
     void _checkBlockedMovement(const std::string & ai_func,
                               const unsigned int & ai_line,
+                              const PieceEnum ai_pieceType,
+                              const ColorEnum ai_pieceColor,
+                              const ts_position ai_startPiecePosition,
+                              const std::vector<ts_position> ai_otherPiecePosition);
+
+    void _checkCaptureMovement(const std::string & ai_func,
+                              const unsigned int & ai_line,
+                              const std::string ai_filePath,
                               const PieceEnum ai_pieceType,
                               const ColorEnum ai_pieceColor,
                               const ts_position ai_startPiecePosition,
