@@ -38,6 +38,8 @@ class Board
     ColorEnum _intepretePieceColor(std::string & ai_pieceColor);
     ts_position _intepretePiecePosition(std::string & ai_piecePosition);
 
+    bool _isSameColorKingCheck(Piece * ai_startPiece, ts_position & ai_endPosition);
+    ts_position _getKingPosition(ColorEnum ai_kingColor);
 
     void _swapPlayerColor();
 
