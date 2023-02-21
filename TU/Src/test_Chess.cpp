@@ -2,6 +2,7 @@
 #include "../Include/test_Tools.h"
 #include "../../Include/Piece.h"
 #include "../../Include/Constants.h"
+#include "../../Include/Logger.h"
 
 const std::string C_KNIGHT_DEFAULT_MOV_FILE_PATH = "./parameters/test_knight_default_movement.txt";
 const std::string C_KNIGHT_BLOCKED_MOV_FILE_PATH = "./parameters/test_knight_blocked_movement.txt";
@@ -377,7 +378,7 @@ void ChessTest::test_king()
 // Check the default board configuration
 void ChessTest::_checkDefaultBoard(const std::string & ai_func, const unsigned int & ai_line)
 {
-  std::cout << "[TEST] [INFO] " << "[" << ai_func << ": " << ai_line << "] " << "Checking Default Board" << std::endl;
+  TraceLog::logger.info(LOG_TEST, "[%s : %i] Checking Default Board", ai_func.c_str(), ai_line);
 
   // Tab of the main pieces position at the start
   const PieceEnum w_pieceTab[8] = {E_ROOK, E_KNIGHT, E_BISHOP, E_QUEEN, E_KING, E_BISHOP, E_KNIGHT, E_ROOK};
@@ -412,7 +413,7 @@ void ChessTest::_checkDefaultMovement(const std::string & ai_func,
   // To know the caller
   std::stringstream w_caller;
   w_caller << "[" << ai_func << ": " << ai_line << "]";
-  std::cout << " [TEST] [INFO] Testing default movement : " << w_caller.str() << std::endl;
+  TraceLog::logger.info(LOG_TEST, "Testing default movement : %s", w_caller.str().c_str());
 
   //Checking default knight movement
   for (int w_cntWidth = 0; w_cntWidth < Constants::C_BOARD_WIDTH; w_cntWidth++)
@@ -425,7 +426,7 @@ void ChessTest::_checkDefaultMovement(const std::string & ai_func,
         // If the move is valid for that piece
         if ( TestTools::isInVector<ts_position>(ai_validPiecePosition, w_testedSquare) )
         {
-          std::cout << " [TEST] [INFO] Testing valid movement" << std::endl;
+          TraceLog::logger.info(LOG_TEST, "Testing valid movement");
           _checkPiece(__FUNCTION__, __LINE__, w_testedSquare, ai_pieceType, ai_pieceColor);
           _checkSquareEmpty(__FUNCTION__, __LINE__, ai_startPiecePosition);
 
@@ -434,7 +435,7 @@ void ChessTest::_checkDefaultMovement(const std::string & ai_func,
         }
         else
         {
-          std::cout << " [TEST] [INFO] Testing not valid movement" << std::endl;
+          TraceLog::logger.info(LOG_TEST, "Testing not valid movement");
           _checkPiece(__FUNCTION__, __LINE__, ai_startPiecePosition, ai_pieceType, ai_pieceColor);
         }
     }
@@ -452,7 +453,7 @@ void ChessTest::_checkBlockedMovement(const std::string & ai_func,
   // To know the caller
   std::stringstream w_caller;
   w_caller << "[" << ai_func << ": " << ai_line << "]";
-  std::cout << " [TEST] [INFO] Testing blocked movement : " << w_caller.str()  << std::endl;
+  TraceLog::logger.info(LOG_TEST, "Testing blocked movement : %s", w_caller.str().c_str());
 
   //Checking default piece movement
   for (int w_cntWidth = -1; w_cntWidth < Constants::C_BOARD_WIDTH + 1; w_cntWidth++)
@@ -467,7 +468,7 @@ void ChessTest::_checkBlockedMovement(const std::string & ai_func,
         mp_board->processMove( ai_startPiecePosition ,w_testedSquare);
 
         // Verifying that main piece doesn't moved
-        std::cout << " [TEST] [INFO] Testing piece hasn't moved" << std::endl;
+        TraceLog::logger.info(LOG_TEST, "Testing piece hasn't moved");
         _checkPiece(__FUNCTION__, __LINE__, ai_startPiecePosition, ai_pieceType, ai_pieceColor);
       }
 
@@ -488,7 +489,7 @@ void ChessTest::_checkCaptureMovement(const std::string & ai_func,
   // To know the caller
   std::stringstream w_caller;
   w_caller << "[" << ai_func << ": " << ai_line << "]";
-  std::cout << " [TEST] [INFO] Testing capture movement : " << w_caller.str() << std::endl;
+  TraceLog::logger.info(LOG_TEST, "Testing capture movement : %s", w_caller.str().c_str());
 
   std::vector<ts_position>::const_iterator w_pieceIt = ai_otherPiecePosition.begin();
 

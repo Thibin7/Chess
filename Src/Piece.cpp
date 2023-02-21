@@ -1,6 +1,7 @@
 #include "../Include/Piece.h"
 #include "../Include/Constants.h"
 #include "../Include/Board.h"
+#include "../Include/Logger.h"
 
 
 // Constructor
@@ -13,10 +14,7 @@ Piece::Piece(PieceEnum ai_name, ColorEnum ai_color, Board * ao_board, ts_positio
   }
   else // Otherwise the default value is used
   {
-    std::cout << "[WARNING] Tried to create a piece out of the board : "
-              << ai_position.posX << " - "
-              << ai_position.posY << ". "
-              << "The piece is automatically set to {0,0}" << std::endl;
+    TraceLog::logger.warning(LOG_SOFT, "Tried to create a piece out of the board : {%i,%i}. The piece is automatically set to {0,0}", ai_position.posX, ai_position.posY);
   }
 }
 
@@ -40,10 +38,7 @@ void Piece::setPosition(ts_position ai_position)
   }
   else
   {
-    std::cout << "[ERROR] Tried to set a position out of the board : "
-              << ai_position.posX << " - "
-              << ai_position.posY << std::endl
-              ;
+    TraceLog::logger.warning(LOG_SOFT, "Tried to set a position out of the board : {%i,%i}. ", ai_position.posX, ai_position.posY);
   }
 }
 

@@ -7,6 +7,7 @@
 class Bishop : public Piece
 {
   public:
+    Bishop(ColorEnum ai_color, ts_position ai_position);
     Bishop(ColorEnum ai_color, Board * ao_board);
     Bishop(ColorEnum ai_color, Board * ao_board, ts_position ai_position);
 

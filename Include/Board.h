@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Tools.h"
+#include "FileLoader.h"
 
 
 class Piece;
@@ -19,10 +20,12 @@ class Board
     void processMove(ts_position ai_startPosition, ts_position ai_endPosition);
 
     bool isPieceOnThePath(ts_position ai_startPosition, ts_position ai_endPosition);
-
     Piece * isPieceOnSquare(ts_position ai_position);
 
-    bool loadGameFile(std::string ai_filePath);
+    bool loadGameFile(std::string ai_path);
+
+    void addPiece(PieceEnum& ai_pieceType, ColorEnum& ai_pieceColor, ts_position& ai_piecePosition);
+    void setPlayerColor(ColorEnum ai_color);
 
 
   private:
@@ -30,13 +33,6 @@ class Board
     ColorEnum m_playerColor {E_WHITE};
 
     void _createDefaultBoard();
-
-    bool _parseFileSave(std::string & ai_readSave);
-    bool _setPlayerColorFromFile(std::string & ai_playerColor);
-    bool _setPieceFromFile(std::string & ai_pieceType, std::string & ai_pieceColor, std::string & ai_piecePosition);
-    PieceEnum _intepretePieceType(std::string & ai_pieceType);
-    ColorEnum _intepretePieceColor(std::string & ai_pieceColor);
-    ts_position _intepretePiecePosition(std::string & ai_piecePosition);
 
     bool _isSameColorKingCheck(Piece * ai_startPiece, ts_position & ai_endPosition);
     ts_position _getKingPosition(ColorEnum ai_kingColor);
