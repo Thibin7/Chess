@@ -42,6 +42,7 @@ class Board
     ts_position _getKingPosition(ColorEnum ai_kingColor);
 
     void _swapPlayerColor();
+    std::string _getColorStr(ColorEnum ai_color);
 
     void _deletePiece(Piece * ai_deletedPiece);
     void _clearCurrentState();

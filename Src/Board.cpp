@@ -1,6 +1,7 @@
 #include "../Include/Board.h"
 #include "../Include/Constants.h"
 #include "../Include/Piece.h"
+#include "../Include/Logger.h"
 
 #include <iostream>
 #include <fstream>
@@ -12,6 +13,9 @@
 #include "../Include/King.h"
 #include "../Include/Pawn.h"
 
+
+
+
 // Default constructor
 Board::Board()
 {
@@ -21,6 +25,13 @@ Board::Board()
 // Construtor
 Board::Board(std::string & ai_filePath)
 {
+  TraceLog::logger.warning(LOG_SOFT, "C'est un warning %i", 2);
+  TraceLog::logger.error(LOG_GAME, "C'est une erreur %i", 4);
+  TraceLog::logger.info(LOG_TEST, "C'est une info %f, %i", 2.6, 2);
+  TraceLog::logger.debug(LOG_SOFT, "C'est une info %f, %i", 2.6, 2);
+
+  //std::cout << "BBB" << std::endl;
+
   if (ai_filePath.empty())
   {
     _createDefaultBoard();
@@ -98,35 +109,38 @@ void Board::processMove(ts_position ai_startPosition, ts_position ai_endPosition
   // If no piece is on the square
   if ( w_startPiece == nullptr )
   {
-    std::cout << "[Error] There is no piece on that square" << std::endl;
+    TraceLog::logger.info(LOG_GAME, "There is no piece on that square !");
     return ;
   }
 
   // If the piece is not the same color as the player to play
   if ( w_startPiece->getColor() != m_playerColor )
   {
-    std::cout << "[Error] Piece is not the right color" << std::endl;
+    std::string w_playerColor = _getColorStr(m_playerColor);
+    TraceLog::logger.info(LOG_GAME, "Piece is not the right color : it is %s player turn !", w_playerColor.c_str());
     return ;
   }
 
   // If the movement is a valid piece movement
   if ( !w_startPiece->isMovementValid(ai_endPosition) )
   {
-    std::cout << "[Error] Movement not valid for that piece" << std::endl;
+    TraceLog::logger.info(LOG_GAME, "Movement not valid for that piece !");
     return ;
   }
 
   // If a piece of the same color is on the targeted Square
   if ( (w_endPiece != nullptr) && (w_startPiece->getColor() == w_endPiece->getColor()) )
   {
-    std::cout << "[Error] Movement not valid, a piece of the same color is on the square" << std::endl;
+    std::string w_pieceColor = _getColorStr(w_startPiece->getColor());
+    TraceLog::logger.info(LOG_GAME, "Movement not valid, a piece of the same color {%s} is on the square !", w_pieceColor.c_str());
     return ;
   }
 
   // If the same color king is check
   if ( _isSameColorKingCheck(w_startPiece, ai_endPosition) )
   {
-    std::cout << "[Error] Movement not valid, your king is check !" << std::endl;
+    std::string w_pieceColor = _getColorStr(w_startPiece->getColor());
+    TraceLog::logger.info(LOG_GAME, "Movement not valid, your king {%s} is check !", w_pieceColor.c_str());
     return ;
   }
 
@@ -436,7 +450,12 @@ bool Board::_isSameColorKingCheck(Piece * ai_startPiece, ts_position & ai_endPos
   std::vector<Piece *>::iterator w_pieceIt = m_currentState.begin();
   for (; w_pieceIt != m_currentState.end(); w_pieceIt++)
   {
-    if ( ((*w_pieceIt)->getColor() != ai_startPiece->getColor()) && (*w_pieceIt)->isMovementValid(w_sameColorKingPos) )
+    // If the piece is of the other Color
+    // If the piece is not at the moved position
+    // If the movement of that piece on the king is valid
+    if ( ((*w_pieceIt)->getColor() != ai_startPiece->getColor())
+      && ((*w_pieceIt)->getPosition() != ai_endPosition )
+      && (*w_pieceIt)->isMovementValid(w_sameColorKingPos) )
     {
       // Repositionning piece on old square
       ai_startPiece->setPosition(w_startPiecePosition);
@@ -444,6 +463,7 @@ bool Board::_isSameColorKingCheck(Piece * ai_startPiece, ts_position & ai_endPos
     }
   }
 
+  ai_startPiece->setPosition(w_startPiecePosition);
   return false;
 }
 
@@ -589,4 +609,32 @@ int Board::_numberOfSquareBetween(ts_position ai_startPosition, ts_position ai_e
   {
     return abs(ai_startPosition.posY - ai_endPosition.posY);
   }
+}
+
+// return the player color to play as a string
+std::string Board::_getColorStr(ColorEnum ai_color)
+{
+  std::string w_colorPlayerStr = "";
+
+  switch (ai_color)
+  {
+    case E_BLACK :
+    {
+      w_colorPlayerStr = "Black";
+      break;
+    }
+    case E_WHITE :
+    {
+      w_colorPlayerStr = "White";
+      break;
+    }
+    default :
+    {
+      TraceLog::logger.error(LOG_SOFT, "Player color Unknown ! Shouldn't happen !");
+      w_colorPlayerStr = "Unknown";
+      break;
+    }
+  }
+
+  return w_colorPlayerStr;
 }
