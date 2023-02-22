@@ -101,6 +101,7 @@ bool Board::loadGameFile(std::string ai_path)
     return w_fileLoader.loadGameFile(ai_path);
 }
 
+// Process the move wanted by the player
 void Board::processMove(ts_position ai_startPosition, ts_position ai_endPosition)
 {
   Piece * w_startPiece = isPieceOnSquare(ai_startPosition);
@@ -149,7 +150,6 @@ void Board::processMove(ts_position ai_startPosition, ts_position ai_endPosition
   w_startPiece->setPosition(ai_endPosition);
   _swapPlayerColor();
 }
-
 
 // Check if a piece is on the path
 bool Board::isPieceOnThePath(ts_position ai_startPosition, ts_position ai_endPosition)
@@ -234,6 +234,7 @@ void Board::setPlayerColor(ColorEnum ai_color)
   m_playerColor = ai_color;
 }
 
+// Check if the king of the piece that want to move is check after the move
 bool Board::_isSameColorKingCheck(Piece * ai_startPiece, ts_position & ai_endPosition)
 {
   // Saving actual piece position

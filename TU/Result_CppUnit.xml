@@ -3,10 +3,10 @@
   <FailedTests></FailedTests>
   <SuccessfulTests>
     <Test id="1">
-      <Name>ChessTest::test_knight</Name>
+      <Name>BishopTest::test_bishop</Name>
     </Test>
     <Test id="2">
-      <Name>ChessTest::test_bishop</Name>
+      <Name>KnightTest::test_knight</Name>
     </Test>
   </SuccessfulTests>
   <Statistics>
