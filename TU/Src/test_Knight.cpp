@@ -4,9 +4,9 @@
 #include "../../Include/Constants.h"
 #include "../../Include/Logger.h"
 
-const std::string C_KNIGHT_DEFAULT_MOV_FILE_PATH = "./parameters/test_knight_default_movement.txt";
-const std::string C_KNIGHT_BLOCKED_MOV_FILE_PATH = "./parameters/test_knight_blocked_movement.txt";
-const std::string C_KNIGHT_CAPTURE_FILE_PATH     = "./parameters/test_knight_capture.txt";
+const std::string C_KNIGHT_DEFAULT_MOV_FILE_PATH = "./parameters/knight_param/test_knight_default_movement.txt";
+const std::string C_KNIGHT_BLOCKED_MOV_FILE_PATH = "./parameters/knight_param/test_knight_blocked_movement.txt";
+const std::string C_KNIGHT_CAPTURE_FILE_PATH     = "./parameters/knight_param/test_knight_capture.txt";
 
 CPPUNIT_TEST_SUITE_REGISTRATION(KnightTest);
 

@@ -8,9 +8,12 @@
     <Test id="2">
       <Name>KnightTest::test_knight</Name>
     </Test>
+    <Test id="3">
+      <Name>RookTest::test_rook</Name>
+    </Test>
   </SuccessfulTests>
   <Statistics>
-    <Tests>2</Tests>
+    <Tests>3</Tests>
     <FailuresTotal>0</FailuresTotal>
     <Errors>0</Errors>
     <Failures>0</Failures>

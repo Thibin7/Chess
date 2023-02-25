@@ -4,9 +4,9 @@
 #include "../../Include/Constants.h"
 #include "../../Include/Logger.h"
 
-const std::string C_BISHOP_DEFAULT_MOV_FILE_PATH = "./parameters/test_bishop_default_movement.txt";
-const std::string C_BISHOP_BLOCKED_MOV_FILE_PATH = "./parameters/test_bishop_blocked_movement.txt";
-const std::string C_BISHOP_CAPTURE_FILE_PATH     = "./parameters/test_bishop_capture.txt";
+const std::string C_BISHOP_DEFAULT_MOV_FILE_PATH = "./parameters/bishop_param/test_bishop_default_movement.txt";
+const std::string C_BISHOP_BLOCKED_MOV_FILE_PATH = "./parameters/bishop_param/test_bishop_blocked_movement.txt";
+const std::string C_BISHOP_CAPTURE_FILE_PATH     = "./parameters/bishop_param/test_bishop_capture.txt";
 
 CPPUNIT_TEST_SUITE_REGISTRATION(BishopTest);
 
